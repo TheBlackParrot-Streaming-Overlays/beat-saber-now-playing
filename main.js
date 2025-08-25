@@ -396,8 +396,6 @@ const eventFuncs = {
 	},
 
 	"map": async function(map) {
-		console.log(map);
-
 		activeMap = map;
 
 		setMapStatus();
