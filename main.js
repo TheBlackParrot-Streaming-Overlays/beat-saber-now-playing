@@ -396,6 +396,8 @@ const eventFuncs = {
 	},
 
 	"map": async function(map) {
+		console.log(map);
+
 		activeMap = map;
 
 		setMapStatus();
@@ -416,6 +418,17 @@ const eventFuncs = {
 		$("#titleString").text(map.song.title + (map.song.subtitle !== "" ? ` - ${map.song.subtitle}` : ""));
 
 		updateMarquee();
+
+		// replace BSR code with "WIP"/"OST" depending on hash
+		// [TODO] only do this if an option is enabled
+		if (!map.map.bsr) {
+			$("#bsrPrefix").hide();
+			map.map.bsr = map.map.hash.toLowerCase().endsWith("wip") ? "WIP" : 
+				map.map.pack ? "OST" : null;
+		} else {
+			$("#bsrPrefix").show();
+		}
+
 
 		$("#artist").text(map.song.artist);
 		if(map.map.bsr) {
