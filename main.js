@@ -417,6 +417,16 @@ const eventFuncs = {
 
 		updateMarquee();
 
+		// replace BSR code with "WIP"/"OST" depending on hash
+		if (!map.map.bsr && localStorage.getItem("setting_bs_miscInfoShowOSTWIP") === "true") {
+			$("#bsrPrefix").hide();
+			map.map.bsr = map.map.hash.toLowerCase().endsWith("wip") ? "WIP" : 
+				map.map.pack ? "OST" : null;	// assuming "pack" is only added if it's an OST map
+		} else {
+			$("#bsrPrefix").show();
+		}
+
+
 		$("#artist").text(map.song.artist);
 		if(map.map.bsr) {
 			$("#bsrCode").text(map.map.bsr);
