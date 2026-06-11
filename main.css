@@ -595,6 +595,7 @@ body {
 
 #fcAccHead {
 	line-height: 1em; /* wtf */
+	background-color: var(--secondaryColor);
 	background-image: var(--secondaryGradientActual);
 	-webkit-text-stroke: var(--fcAccFontAdditionalWeight) transparent;
 	-webkit-background-clip: text;
