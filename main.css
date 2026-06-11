@@ -482,6 +482,7 @@ body {
 
 #artist, .mapper, .basePack {
 	display: inline-flex;
+	background-color: var(--secondaryColor);
 	background-image: var(--secondaryGradientActual);
 	-webkit-text-stroke: var(--secondaryAdditionalWeight) transparent;
 	-webkit-background-clip: text;

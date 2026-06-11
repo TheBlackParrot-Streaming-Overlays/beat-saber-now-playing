@@ -1,4 +1,4 @@
-const overlayRevision = 23;
+const overlayRevision = 24;
 const overlayRevisionTimestamp = 1756970934557;
 
 const settingsChannel = new BroadcastChannel("settings_overlay");
@@ -326,10 +326,12 @@ const settingUpdaters = {
 	},
 	artistColorReflectsArtColor: function(value) {
 		if(value === "true") {
+			const safe = localStorage.getItem("setting_bs_ensureColorIsBrightEnough") === "true";
+
 			if(localStorage.getItem("setting_bs_artistColorReflectsArtColorDarker") === "true") {
-				rootCSS().setProperty("--secondaryColor", "var(--colorDark)");
+				rootCSS().setProperty("--secondaryColor", safe ? "var(--colorSafeDark)" : "var(--colorDark)");
 			} else {
-				rootCSS().setProperty("--secondaryColor", "var(--colorLight)");
+				rootCSS().setProperty("--secondaryColor", safe ? "var(--colorSafeLight)" : "var(--colorLight)");
 			}
 		} else {
 			rootCSS().setProperty("--secondaryColor", "var(--secondaryColorStatic)");
@@ -357,10 +359,12 @@ const settingUpdaters = {
 			return;
 		}
 
+		const safe = localStorage.getItem("setting_bs_ensureColorIsBrightEnough") === "true";
+
 		if(value === "true") {
-			rootCSS().setProperty("--secondaryColor", "var(--colorDark)");
+			rootCSS().setProperty("--secondaryColor", safe ? "var(--colorSafeDark)" : "var(--colorDark)");
 		} else {
-			rootCSS().setProperty("--secondaryColor", "var(--colorLight)");
+			rootCSS().setProperty("--secondaryColor", safe ? "var(--colorSafeLight)" : "var(--colorLight)");
 		}
 	},
 	enableArtistMapperCycle: function(value) {
@@ -1245,6 +1249,18 @@ const settingUpdaters = {
 	},
 	miscInfoBottomAdditionalFontWeight: function(value) {
 		rootCSS().setProperty("--miscInfoBottomAdditionalFontWeight", `${value}px`);
+	},
+	ensureColorIsBrightEnough: function(value) {
+		// lazy, will better this later
+		if(value === "true") {
+			if(localStorage.getItem("setting_bs_artistColorReflectsArtColor") === "true") {
+				if(localStorage.getItem("setting_bs_artistColorReflectsArtColorDarker") === "true") {
+					rootCSS().setProperty("--secondaryColor", "var(--colorSafeDark)");
+				} else {
+					rootCSS().setProperty("--secondaryColor", "var(--colorSafeLight)");
+				}
+			}
+		}
 	}
 };
 

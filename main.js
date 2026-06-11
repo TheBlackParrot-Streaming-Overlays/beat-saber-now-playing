@@ -69,18 +69,18 @@ function setArt() {
 	let darkColor = activeMap.cover.colors.dark;
 	let lightColor = activeMap.cover.colors.light;
 
-	if(localStorage.getItem("setting_bs_ensureColorIsBrightEnough") === "true") {
-		let minBrightness = (parseFloat(localStorage.getItem("setting_bs_colorMinBrightness"))/100) * 255;
-		let maxBrightness = (parseFloat(localStorage.getItem("setting_bs_colorMaxBrightness"))/100) * 255;
-
-		darkColor = ensureSafeColor(darkColor, minBrightness, maxBrightness);
-		lightColor = ensureSafeColor(lightColor, minBrightness, maxBrightness);
-	}
-
 	localStorage.setItem("art_darkColor", darkColor);
 	localStorage.setItem("art_lightColor", lightColor);
 	$(":root").get(0).style.setProperty("--colorDark", darkColor);
 	$(":root").get(0).style.setProperty("--colorLight", lightColor);
+
+	if(localStorage.getItem("setting_bs_ensureColorIsBrightEnough") === "true") {
+		let minBrightness = (parseFloat(localStorage.getItem("setting_bs_colorMinBrightness"))/100) * 255;
+		let maxBrightness = (parseFloat(localStorage.getItem("setting_bs_colorMaxBrightness"))/100) * 255;
+
+		$(":root").get(0).style.setProperty("--colorSafeDark", ensureSafeColor(darkColor, minBrightness, maxBrightness));
+		$(":root").get(0).style.setProperty("--colorSafeLight", ensureSafeColor(lightColor, minBrightness, maxBrightness));
+	}
 }
 
 function setQR() {
@@ -371,6 +371,10 @@ const eventFuncs = {
 
 	"hash": function(hash) {
 		setHealth(0.5, true);
+		setHandAverages({
+			left: [0, 0, 0],
+			right: [0, 0, 0]
+		});
 
 		toggleOverlay(true);
 		switchSecondary(true);
