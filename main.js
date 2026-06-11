@@ -173,10 +173,16 @@ function updateSecondaryMarquee() {
 
 var hideShowTO;
 var artState = true;
+var previousOverlayVisibleState = false;
 function toggleOverlay(show) {
 	if(localStorage.getItem("setting_bs_hideOnMenu") === "false") {
 		show = true;
 	}
+
+	if(previousOverlayVisibleState == show) {
+		return;
+	}
+	previousOverlayVisibleState = show;
 
 	clearTimeout(hideShowTO);
 	if(show) {
@@ -363,10 +369,10 @@ const eventFuncs = {
 		setHealth(data.health || 0);
 
 		timerFunction();
+	},
 
-		if(data.state === "stopped") {
-			toggleOverlay(false);
-		}
+	"scene": function(scene) {
+		toggleOverlay(scene !== "Menu");
 	},
 
 	"hash": function(hash) {
