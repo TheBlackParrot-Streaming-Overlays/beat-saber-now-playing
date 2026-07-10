@@ -513,6 +513,10 @@ const eventFuncs = {
 	"qr": function(qr) {
 		activeMap.qrCode = qr;
 		setQR();
+	},
+
+	"njs": function(value) {
+		updateNJSDisplay(value);
 	}
 };
 function processMessage(data) {
@@ -521,6 +525,27 @@ function processMessage(data) {
 	} else {
 		console.log(data);
 	}
+}
+
+var njsDisplayTimeout;
+var currentNJS = 12;
+function updateNJSDisplay(value) {
+	currentNJS = value;
+	$("#njsValue").text(value.toFixed(localStorage.getItem("setting_bs_njsPrecision")));
+
+	if(localStorage.getItem("setting_bs_njsEnableDisplay") !== "true") {
+		return;
+	}
+
+	if($("#njsWrapper span").hasClass("njsGoOut")) {
+		$("#njsWrapper span").addClass("njsComeIn").removeClass("njsGoOut");
+	}
+
+	clearTimeout(njsDisplayTimeout);
+	njsDisplayTimeout = setTimeout(hideNJSDisplay, 5000);
+}
+function hideNJSDisplay() {
+	$("#njsWrapper span").addClass("njsGoOut").removeClass("njsComeIn");
 }
 
 var secondaryTimer;

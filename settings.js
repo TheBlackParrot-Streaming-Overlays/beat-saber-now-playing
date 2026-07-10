@@ -1,4 +1,4 @@
-const overlayRevision = 24;
+const overlayRevision = 25;
 const overlayRevisionTimestamp = 1781217459984;
 
 const settingsChannel = new BroadcastChannel("settings_overlay");
@@ -1261,6 +1261,63 @@ const settingUpdaters = {
 				}
 			}
 		}
+	},
+	njsEnableDisplay: function(value) {
+		rootCSS().setProperty("--njsDisplay", value === "true" ? "flex" : "none");
+		updateNJSDisplay(currentNJS);
+	},
+	njsWidth: function(value) {
+		rootCSS().setProperty("--njsWidth", `${value}px`);
+	},
+	njsAlignment: function(value) {
+		rootCSS().setProperty("--njsAlignment", value);
+	},
+	njsPrecision: function(value) {
+		updateNJSDisplay(currentNJS);
+	},
+	njsLabelColorReflectsArtColor: function(value) {
+		const isDark = localStorage.getItem("setting_bs_njsLabelColorReflectsArtColorDarker") === "true";
+		rootCSS().setProperty("--njsLabelColor", value === "true" ? (isDark ? "var(--colorDark)" : "var(--colorLight)") : "var(--njsLabelColorStatic)");
+	},
+	njsLabelColorReflectsArtColorDarker: function(value) {
+		const doesReflect = localStorage.getItem("setting_bs_njsLabelColorReflectsArtColor") === "true";
+		rootCSS().setProperty("--njsLabelColor", doesReflect ? (value === "true" ? "var(--colorDark)" : "var(--colorLight)") : "var(--njsLabelColorStatic)");
+	},
+	njsLabelColor: function(value) {
+		rootCSS().setProperty("--njsLabelColorStatic", value);
+	},
+	njsLabelFontFamily: function(value) {
+		rootCSS().setProperty("--njsLabelFontFamily", value);
+	},
+	njsLabelFontItalic: function(value) {
+		rootCSS().setProperty("--njsLabelFontStyle", value === "true" ? "italic" : "normal");
+	},
+	njsLabelFontSize: function(value) {
+		rootCSS().setProperty("--njsLabelFontSize", `${value}pt`);
+	},
+	njsLabelFontWeight: function(value) {
+		rootCSS().setProperty("--njsLabelFontWeight", value);
+	},
+	njsLabelFontAdditionalWeight: function(value) {
+		rootCSS().setProperty("--njsLabelFontAdditionalWeight", `${value}px`);
+	},
+	njsValueColor: function(value) {
+		rootCSS().setProperty("--njsValueColor", value);
+	},
+	njsValueFontFamily: function(value) {
+		rootCSS().setProperty("--njsValueFontFamily", value);
+	},
+	njsValueFontItalic: function(value) {
+		rootCSS().setProperty("--njsValueFontStyle", value === "true" ? "italic" : "normal");
+	},
+	njsValueFontSize: function(value) {
+		rootCSS().setProperty("--njsValueFontSize", `${value}pt`);
+	},
+	njsValueFontWeight: function(value) {
+		rootCSS().setProperty("--njsValueFontWeight", value);
+	},
+	njsValueFontAdditionalWeight: function(value) {
+		rootCSS().setProperty("--njsValueFontAdditionalWeight", `${value}px`);
 	}
 };
 

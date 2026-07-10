@@ -269,4 +269,23 @@
 	--mapStatusGradientAngle: 90deg;
 	--mapStatusDefaultColor: #666666;
 	--mapStatusGradient: linear-gradient(var(--mapStatusGradientAngle), var(--mapStatusDefaultColor), var(--mapStatusDefaultColor));
+
+	--njsDisplay: none;
+	--njsLabelColor: var(--njsLabelColorStatic);
+	--njsLabelColorStatic: #cbadff;
+	--njsValueColor: #ffffff;
+	--njsLabelFontFamily: "Manrope";
+	--njsValueFontFamily: "Manrope";
+	--njsLabelFontStyle: normal;
+	--njsValueFontStyle: normal;
+	--njsLabelFontSize: 12pt;
+	--njsValueFontSize: 12pt;
+	--njsLabelFontWeight: 900;
+	--njsValueFontWeight: 900;
+	--njsLabelFontAdditionalWeight: 0px;
+	--njsValueFontAdditionalWeight: 0px;
+	--njsWidth: 300px;
+	--njsAlignment: left;
+	--njsHeight: 80px;
+	--njsAnimationDuration: 0.5s;
 }

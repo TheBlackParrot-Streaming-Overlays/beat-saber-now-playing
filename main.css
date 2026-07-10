@@ -86,6 +86,35 @@
 .cssScroll { animation-name: scroll; }
 .cssScrollClippingWorkaround { animation-name: clippingWorkaround; }
 
+@keyframes njsComeIn {
+	0% {
+		opacity: 0;
+		transform: translateY(var(--njsHeight));
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+@keyframes njsGoOut {
+	0% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(var(--njsHeight));
+	}
+}
+.njsComeIn, .njsGoOut {
+	animation-duration: var(--njsAnimationDuration);
+	animation-direction: forwards;
+	animation-fill-mode: forwards;
+	animation-iteration-count: 1;	
+}
+.njsComeIn { animation-name: njsComeIn; }
+.njsGoOut { animation-name: njsGoOut; }
+
 body {
 	background: transparent;
 	background-color: transparent;
@@ -100,7 +129,7 @@ body {
 #accWrap, #fcAcc, #fcAccHead, #comboWrap,
 #ppCell, #ssStarsWrap, #blStarsWrap, #mapModifiersWrap,
 #handValueCellLeft, #handValueCellRight,
-#pbAccWrap, .basicHeader {
+#pbAccWrap, .basicHeader, #njsWrapperContent {
 	filter:	var(--effects);
 }
 #diffWrap, #title, #artist, .mapper, .basePack {
@@ -809,6 +838,43 @@ body {
 }
 #pbModifiers:after {
 	content: ")";
+}
+
+#njsWrapper {
+	display: var(--njsDisplay);
+	width: var(--njsWidth);
+	height: var(--njsHeight);
+	position: absolute;
+	top: calc(var(--background-art-offset) + var(--background-art-height));
+	left: 0;
+	z-index: 0;
+	align-items: center;
+}
+#njsWrapper span {
+	opacity: 0;
+	transform: translateY(var(--njsHeight));
+	padding-left: var(--overlayMarginHorizontal);
+}
+#njsLabel {
+	font-family: var(--njsLabelFontFamily);
+	font-style: var(--njsLabelFontStyle);
+	font-size: var(--njsLabelFontSize);
+	font-weight: var(--njsLabelFontWeight);
+	background-color: var(--njsLabelColor);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-webkit-text-stroke: var(--njsLabelFontAdditionalWeight) transparent;
+}
+#njsValue {
+	font-family: var(--njsValueFontFamily);
+	font-style: var(--njsValueFontStyle);
+	font-size: var(--njsValueFontSize);
+	font-weight: var(--njsValueFontWeight);
+	font-variant: tabular-nums;
+	background-color: var(--njsValueColor);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-webkit-text-stroke: var(--njsValueFontAdditionalWeight) transparent;
 }
 
 /* uncomment after OBS updates CEF to a recent chrome version
