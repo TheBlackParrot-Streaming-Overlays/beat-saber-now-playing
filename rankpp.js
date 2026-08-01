@@ -1,6 +1,11 @@
 var curveData = {
 	BeatLeader: [[0, 0]],
-	ScoreSaber: [[0, 0]]
+	ScoreSaber: [[0, 0]],
+	AccSaber: [[0, 0]]
+};
+var accSaberExtraCurveData = {
+	"scale": 61,
+	"shift": -18
 };
 
 async function getCurveData() {
@@ -11,13 +16,52 @@ async function getCurveData() {
 	}
 
 	curveData = await response.json();
+
+	const accSaberResponse = await fetch("https://api.accsaber.com/v1/curves");
+	if(!response.ok) {
+		console.error("Could not fetch curve data for AccSaber");
+		return;
+	}
+
+	const allAccSaberCurveData = await accSaberResponse.json();
+	let accSaberCurveData;
+
+	for(let i = 0; i < allAccSaberCurveData.length; i++) {
+		if(allAccSaberCurveData[i].id === "acc00000-0000-0000-0000-000000000001") {
+			accSaberCurveData = allAccSaberCurveData[i].points;
+			accSaberExtraCurveData.scale = allAccSaberCurveData[i].scale;
+			accSaberExtraCurveData.shift = allAccSaberCurveData[i].shift;
+			break;
+		}
+	}
+
+	if(!accSaberCurveData) {
+		console.error("Could not find AccSaber's general curve data");
+		return;
+	}
+
+	accSaberCurveData.reverse();
+	curveData.AccSaber = [];
+	for(let i = 0; i < accSaberCurveData.length; i++) {
+		let data = accSaberCurveData[i];
+		curveData.AccSaber.push([data.x, data.y]);
+	}
 }
 
 async function getCachedRankedData(service, url) {
-	if(service === "BeatLeader") {
-		var cacheStorage = await caches.open("BeatLeaderCache");
-	} else {
-		var cacheStorage = await caches.open("ScoreSaberCache");
+	var cacheStorage;
+	switch(service) {
+		case "BeatLeader":
+			cacheStorage = await caches.open("BeatLeaderCache");
+			break;
+
+		case "ScoreSaber":
+			cacheStorage = await caches.open("ScoreSaberCache");
+			break;
+
+		case "AccSaber":
+			cacheStorage = await caches.open("AccSaberCache");
+			break;
 	}
 
 	var cachedResponse = await cacheStorage.match(url);
@@ -54,6 +98,7 @@ async function getCachedRankedData(service, url) {
 var leaderboardData = {
 	BeatLeader: {},
 	ScoreSaber: {},
+	AccSaber: {},
 	hash: null
 };
 
@@ -111,10 +156,34 @@ async function getScoreSaberLeaderboardData(difficulty, characteristic, hash) {
 	return data;
 }
 
+const accDiffEnum = {
+	Easy: "EASY",
+	Normal: "NORMAL",
+	Hard: "HARD",
+	Expert: "EXPERT",
+	ExpertPlus: "EXPERT_PLUS"
+};
+
+async function getAccSaberLeaderboardData(difficulty, hash) {
+	let url = new URL(`/v1/maps/hash/${hash.toLowerCase()}`, 'https://api.accsaber.com/');
+	const query = new URLSearchParams({
+		difficulty: accDiffEnum[difficulty]
+	});
+	url.search = query.toString();
+
+	const data = await getCachedRankedData("AccSaber", url.toString());
+	if(data === null) {
+		return null;
+	}
+
+	return data;
+}
+
 var previousRankedHashCheck;
 async function refreshLeaderboardData(difficulty, characteristic, hash) {
 	$("#blValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
 	$("#ssValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
+	$("#apValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
 
 	const hashCheckString = hash + characteristic + difficulty;
 	if(hashCheckString === previousRankedHashCheck) {
@@ -124,6 +193,7 @@ async function refreshLeaderboardData(difficulty, characteristic, hash) {
 	$("#ppCell").hide();
 	$("#blCell").hide();
 	$("#ssCell").hide();
+	$("#apCell").hide();
 
 	previousRankedHashCheck = hashCheckString;
 
@@ -131,6 +201,7 @@ async function refreshLeaderboardData(difficulty, characteristic, hash) {
 
 	leaderboardData.BeatLeader = null;
 	leaderboardData.ScoreSaber = null;
+	leaderboardData.AccSaber = null;
 
 	beatLeaderData = await getBeatLeaderLeaderboardData(difficulty, characteristic, hash);
 	console.log(beatLeaderData);
@@ -192,6 +263,31 @@ async function refreshLeaderboardData(difficulty, characteristic, hash) {
 		}
 	}
 
+	accSaberData = await getAccSaberLeaderboardData(difficulty, hash);
+	console.log(accSaberData);
+
+	if(!accSaberData) {
+		leaderboardData.AccSaber = null;
+	} else {
+		if(accSaberData.difficulties.length) {
+			leaderboardData.AccSaber = {
+				ranked: accSaberData.difficulties[0].status === "RANKED",
+				stars: accSaberData.difficulties[0].complexity
+			}
+
+			if(leaderboardData.AccSaber.ranked) {
+				if(localStorage.getItem("setting_bs_ppDisplayAP")) {
+					$("#apCell").show();
+				}
+				isRanked = true;
+
+				$("#apStarsValue").text(leaderboardData.AccSaber.stars.toFixed(2));
+			}
+		} else {
+			leaderboardData.AccSaber = null;
+		}
+	}
+
 	leaderboardData.hash = hash;
 
 	if(isRanked) {
@@ -201,6 +297,7 @@ async function refreshLeaderboardData(difficulty, characteristic, hash) {
 		if(!currentState.hits && !currentState.misses) {
 			$("#ssValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
 			$("#blValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
+			$("#apValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
 		} else {
 			updatePPValues(currentState.acc);
 		}
@@ -209,27 +306,7 @@ async function refreshLeaderboardData(difficulty, characteristic, hash) {
 	return true;
 }
 
-/*
 // https://github.com/BeatLeader/beatleader-server/blob/98319aa661f3455c6cdfd20ef7a6c8f17b0aa216/Utils/ReplayUtils.cs
-public static float Curve2(float acc)
-{
-	int i = 0;
-	for (; i < pointList2.Count; i++)
-	{
-		if (pointList2[i].Item1 <= acc) {
-			break;
-		}
-	}
-
-	if (i == 0) {
-		i = 1;
-	}
-
-	double middle_dis = (acc - pointList2[i-1].Item1) / (pointList2[i].Item1 - pointList2[i-1].Item1);
-	return (float)(pointList2[i-1].Item2 + middle_dis * (pointList2[i].Item2 - pointList2[i-1].Item2));
-}
-*/
-
 function _Curve2(points, acc) {
 	if(isNaN(acc) || acc === undefined) {
 		return 0;
@@ -250,32 +327,12 @@ function _Curve2(points, acc) {
 	return points[i-1][1] + middle_dis * (points[i][1] - points[i-1][1]);
 }
 
-/*
 // https://github.com/BeatLeader/beatleader-server/blob/98319aa661f3455c6cdfd20ef7a6c8f17b0aa216/Utils/ReplayUtils.cs
-private static float Inflate(float peepee) {
-	return (650f * MathF.Pow(peepee, 1.3f)) / MathF.Pow(650f, 1.3f);
-}
-*/
 function _Inflate(pp) {
 	return (650 * Math.pow(pp, 1.3)) / Math.pow(650, 1.3);
 }
 
-/*
 // https://github.com/BeatLeader/beatleader-server/blob/98319aa661f3455c6cdfd20ef7a6c8f17b0aa216/Utils/ReplayUtils.cs
-private static (float, float, float) GetPp(LeaderboardContexts context, float accuracy, float accRating, float passRating, float techRating) {
-
-	float passPP = 15.2f * MathF.Exp(MathF.Pow(passRating, 1 / 2.62f)) - 30f;
-	if (float.IsInfinity(passPP) || float.IsNaN(passPP) || float.IsNegativeInfinity(passPP) || passPP < 0)
-	{
-		passPP = 0;
-	}
-	float accPP = context == LeaderboardContexts.Golf ? accuracy * accRating * 42f : Curve2(accuracy) * accRating * 34f;
-	float techPP = MathF.Exp(1.9f * accuracy) * 1.08f * techRating;
-	
-	return (passPP, accPP, techPP);
-}
-*/
-
 function getBeatLeaderPP(acc, accRating, passRating, techRating) {
 	let passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 30;
 	if(passPP === Infinity || isNaN(passPP) || passPP < 0) {
@@ -301,6 +358,16 @@ function getScoreSaberPP(acc, stars) {
 	return value;
 }
 
+// https://github.com/accsaber/accsaber-reloaded-backend/blob/7e600dca5424aefb7a502a8d4612bb5843c7dc97/src/main/java/com/accsaber/backend/service/score/APCalculationService.java#L37
+function getAccSaberPP(acc, stars) {
+	const rawValue = _Curve2(curveData.AccSaber, acc);
+	if(isNaN(rawValue) || rawValue === undefined) {
+		return 0;
+	}
+
+	return parseFloat((rawValue * (stars - accSaberExtraCurveData.shift) * accSaberExtraCurveData.scale).toFixed(6));
+}
+
 // really don't wanna call localStorage super frequently so, this changes from settings.js
 var ppDecimalPrecision = 2;
 function updatePPValues(acc) {
@@ -316,6 +383,7 @@ function updatePPValues(acc) {
 
 	const ss = leaderboardData.ScoreSaber;
 	const bl = leaderboardData.BeatLeader;
+	const ap = leaderboardData.AccSaber;
 
 	if(leaderboardData.ScoreSaber) {
 		if(leaderboardData.ScoreSaber.ranked) {
@@ -359,5 +427,18 @@ function updatePPValues(acc) {
 		}
 	} else {
 		$("#blValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
+	}
+
+	if(leaderboardData.AccSaber) {
+		if(leaderboardData.AccSaber.ranked) {
+			const value = getAccSaberPP(acc, ap.stars);
+			const parts = value.toFixed(ppDecimalPrecision).split(".");
+
+			$("#apValue").text(`${parseInt(parts[0]).toLocaleString()}${ppDecimalPrecision ? `.${parts[1]}` : ""}`);
+		} else {
+			$("#apValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
+		}
+	} else {
+		$("#apValue").text(`0${ppDecimalPrecision ? `.${"".padStart(ppDecimalPrecision, "0")}` : ""}`);
 	}
 }

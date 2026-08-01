@@ -582,6 +582,7 @@ const miscInfoWrapElements = [
 	"#codeWrap",
 	"#ssStarsWrap",
 	"#blStarsWrap",
+	"#apStarsWrap",
 	"#mapModifiersWrap"
 ];
 
@@ -600,6 +601,7 @@ function changeMiscInfoDisplay() {
 		(localStorage.getItem("setting_bs_miscInfoShowBSR") === "true"),
 		(localStorage.getItem("setting_bs_miscInfoShowScoreSaberStars") === "true"),
 		(localStorage.getItem("setting_bs_miscInfoShowBeatLeaderStars") === "true"),
+		(localStorage.getItem("setting_bs_miscInfoShowAccSaberComplexity") === "true"),
 		(localStorage.getItem("setting_bs_miscInfoShowMapModifiers") === "true")
 	]
 
@@ -608,6 +610,7 @@ function changeMiscInfoDisplay() {
 			allowedToDisplay[1] = false;
 			allowedToDisplay[2] = false;
 			allowedToDisplay[3] = false;
+			allowedToDisplay[4] = false;
 		} else {
 			if(leaderboardData.ScoreSaber) {
 				if(!leaderboardData.ScoreSaber.ranked || activeMap.map.hash !== leaderboardData.hash) {
@@ -624,13 +627,21 @@ function changeMiscInfoDisplay() {
 			} else {
 				allowedToDisplay[3] = false;
 			}
+
+			if(leaderboardData.AccSaber) {
+				if(!leaderboardData.AccSaber.ranked || activeMap.map.hash.toLowerCase() !== leaderboardData.hash.toLowerCase()) {
+					allowedToDisplay[4] = false;
+				}
+			} else {
+				allowedToDisplay[4] = false;
+			}
 		}
 	}
 
 	if("map" in activeMap) {
 		if("modifiers" in activeMap.map) {
 			if(!getModifierString(activeMap.map.modifiers, "").length) {
-				allowedToDisplay[4] = false;
+				allowedToDisplay[5] = false;
 			}
 		}
 	}

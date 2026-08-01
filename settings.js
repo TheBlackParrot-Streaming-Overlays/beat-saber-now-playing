@@ -753,6 +753,17 @@ const settingUpdaters = {
 			$("#blCell").hide();
 		}
 	},
+	ppDisplayAP: function(value) {
+		if(value === "true") {
+			if(leaderboardData.AccSaber) {
+				if(leaderboardData.AccSaber.ranked) {
+					$("#apCell").show();
+				}
+			}
+		} else {
+			$("#apCell").hide();
+		}
+	},
 	fcAccColor: function(value) {
 		rootCSS().setProperty("--fcAccColor", value);
 	},

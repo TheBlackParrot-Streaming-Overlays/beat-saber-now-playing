@@ -127,7 +127,7 @@ body {
 #title, #artist, .mapper, #mapperContainer:before, .basePack,
 #hitMissCell,
 #accWrap, #fcAcc, #fcAccHead, #comboWrap,
-#ppCell, #ssStarsWrap, #blStarsWrap, #mapModifiersWrap,
+#ppCell, #ssStarsWrap, #blStarsWrap, #apStarsWrap, #mapModifiersWrap,
 #handValueCellLeft, #handValueCellRight,
 #pbAccWrap, .basicHeader, #njsWrapperContent {
 	filter:	var(--effects);
@@ -196,7 +196,7 @@ body {
 	-webkit-mask-size: contain;
 }
 
-#duration, #time, #combo, #acc, #hitValue, #missValue, #ssValue, #blValue, #fcAcc, .handCellContainer, #pbAcc {
+#duration, #time, #combo, #acc, #hitValue, #missValue, #ssValue, #blValue, #apValue, #fcAcc, .handCellContainer, #pbAcc {
 	font-variant: tabular-nums;
 }
 #miscInfoCell, #metadataCell, #hitMissCell, #accCell, #ppCell, #handValueCell, #pbCell {
@@ -206,12 +206,15 @@ body {
 #metadataCell {
 	overflow: hidden; /* ????? */
 }
-#diffWrap, #codeWrap, #hitCell, #FCCell, #missCell, #comboWrap, #accWrap, #ssCell, #blCell, #ssStarsWrap, #blStarsWrap, #fcAccWrap, .handCellContainer, #pbAccWrap, .basicHeader, #mapModifiersWrap {
+#diffWrap, #codeWrap, #hitCell, #FCCell, #missCell, #comboWrap, #accWrap,
+#ssCell, #blCell, #apCell,
+#ssStarsWrap, #blStarsWrap, #apStarsWrap,
+#fcAccWrap, .handCellContainer, #pbAccWrap, .basicHeader, #mapModifiersWrap {
 	padding-top: var(--verticalSpacing);
 	padding-bottom: var(--verticalSpacing);
 }
 
-#diffWrap, #codeWrap, #ssStarsWrap, #blStarsWrap, #mapModifiersWrap {
+#diffWrap, #codeWrap, #ssStarsWrap, #blStarsWrap, #apStarsWrap, #mapModifiersWrap {
 	line-height: var(--miscInfoLineHeight);
 	align-items: baseline;
 	justify-content: var(--miscInfoAlignment);
@@ -233,12 +236,12 @@ body {
 	margin-right: 0.1em;
 }
 
-#diff, #codeWrap div, #ssStarsValue, #blStarsValue, #mapModifiersValue {
+#diff, #codeWrap div, #ssStarsValue, #blStarsValue, #apStarsValue, #mapModifiersValue {
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	-webkit-text-stroke: var(--miscInfoTopAdditionalFontWeight) transparent;
 }
-#diff, #time, #bsrCode, #ssStarsValue, #blStarsValue, #mapModifiersValue {
+#diff, #time, #bsrCode, #ssStarsValue, #blStarsValue, #apStarsValue, #mapModifiersValue {
 	background-color: var(--miscInfoColor);
 }
 #time, #duration {
@@ -325,7 +328,7 @@ body {
 	-webkit-text-fill-color: transparent;
 	-webkit-text-stroke: var(--hitMissFontAdditionalWeight) transparent;	
 }
-#blCell span, #ssCell span {
+#blCell span, #ssCell span, #apCell span {
 	background-color: var(--ppColor);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -592,6 +595,11 @@ body {
 
 #ssValue:after, #blValue:after {
 	content: "pp";
+}
+#apValue:after {
+	content: "ap";
+}
+#ssValue:after, #blValue:after, #apValue:after {
 	font-size: 0.8em;
 	line-height: 0px;
 }

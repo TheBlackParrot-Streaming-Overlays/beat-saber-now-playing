@@ -40,6 +40,12 @@
 				<div id="blStarsValue">5.81</div>
 			</div>
 
+			<div id="apStarsWrap" style="display: none;">
+				<img class="ppIcon" src="icons/acc_logo.png">
+				<i class="fas fa-star fa-fw"></i>
+				<div id="apStarsValue">5.81</div>
+			</div>
+
 			<div id="mapModifiersWrap" style="display: none;">
 				<i class="fas fa-screwdriver-wrench fa-fw"></i>
 				<div id="mapModifiersValue">FS, GN, BE</div>
@@ -144,6 +150,10 @@
 				<img class="ppIcon" src="icons/bl_logo.png"/>
 				<span id="blValue">0.0</span>
 			</div>
+			<div id="apCell">
+				<img class="ppIcon" src="icons/acc_logo.png"/>
+				<span id="apValue">0.0</span>
+			</div>
 		</div>
 
 		<div class="cell" id="handValueCell">
@@ -226,7 +236,12 @@
 	<script defer type="text/javascript" src="../shared/libs/bg_settings.js"></script>
 	<script type="text/javascript">
 		window.addEventListener("load", async function() {
-			await getCurveData();
+			try {
+				await getCurveData();
+			} catch(err) {
+				console.error(err);
+			}
+
 			changeMiscInfoDisplay();
 
 			postToSettingsEventChannel("BSStatsOverlayExists", {version: overlayRevision});
